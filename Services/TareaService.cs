@@ -1,4 +1,5 @@
-﻿using gestionTareas.DTOs;
+﻿using AutoMapper;
+using gestionTareas.DTOs;
 using gestionTareas.Models;
 using gestionTareas.Repository;
 
@@ -8,9 +9,13 @@ namespace gestionTareas.Services
     {
         ITareaRepository _tareaRepository;
 
-        public TareaService(ITareaRepository tareaRepository)
+        //Mappers
+        private readonly IMapper _mapper;
+
+        public TareaService(ITareaRepository tareaRepository, IMapper mapper)
         {
             _tareaRepository = tareaRepository; 
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<TareaDto>> Get()
@@ -48,24 +53,11 @@ namespace gestionTareas.Services
 
         public async Task<TareaDto> Add(TareaInsertDto tareaInsertDto)
         {
-            var tarea = new Tarea()
-            {
-                Titulo = tareaInsertDto.Titulo,
-                Descripcion = tareaInsertDto.Descripcion,
-                Estado = tareaInsertDto.Estado,
-                FechaLimite = tareaInsertDto.FechaLimite
-            };
+            var tarea = _mapper.Map<Tarea>(tareaInsertDto);
             await _tareaRepository.Add(tarea);
             await _tareaRepository.Save();
 
-            var tareaDto = new TareaDto
-            {
-                TareaId = tarea.TareaId,
-                Titulo = tarea.Titulo,
-                Descripcion = tarea.Descripcion,
-                Estado= tarea.Estado,
-                FechaLimite= tarea.FechaLimite
-            };
+            var tareaDto = _mapper.Map<TareaDto>(tarea);
             return tareaDto;
 
         }
@@ -83,14 +75,7 @@ namespace gestionTareas.Services
                 _tareaRepository.Update(tarea);
                 await _tareaRepository.Save();
 
-                var tareaDto = new TareaDto
-                {
-                    TareaId = tarea.TareaId,
-                    Titulo = tarea.Titulo,
-                    Descripcion = tarea.Descripcion,
-                    Estado = tarea.Estado,
-                    FechaLimite = tarea.FechaLimite
-                };
+                var tareaDto = _mapper.Map<TareaDto>(tarea);
                 return tareaDto;
             }
             return null;
@@ -102,14 +87,7 @@ namespace gestionTareas.Services
 
             if (tarea != null)
             {
-                var tareaDto = new TareaDto
-                {
-                    TareaId = tarea.TareaId,
-                    Titulo = tarea.Titulo,
-                    Descripcion = tarea.Descripcion,
-                    Estado = tarea.Estado,
-                    FechaLimite = tarea.FechaLimite
-                };
+                var tareaDto = _mapper.Map<TareaDto>(tarea);
 
                 _tareaRepository.Delete(tarea);
                 await _tareaRepository.Save();

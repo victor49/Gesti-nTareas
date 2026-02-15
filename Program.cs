@@ -1,7 +1,9 @@
+using gestionTareas.AutoMappers;
 using gestionTareas.Models;
 using gestionTareas.Repository;
 using gestionTareas.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace gestionTareas
 {
@@ -21,9 +23,12 @@ namespace gestionTareas
             builder.Services.AddDbContext<TareaContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("MiConexion")));
 
-
+            // Inyeccion de services y repositorys 
             builder.Services.AddScoped<ITareaService, TareaService>();
             builder.Services.AddScoped<ITareaRepository, TareaRepository>();
+
+            // Inyección de Mappers
+            builder.Services.AddAutoMapper(cfg => { }, typeof(MappingProfile));
 
             //permisos de para acceder a la API
             var MyAllowOrigins = "MyAllowOrigins";
