@@ -22,14 +22,7 @@ namespace gestionTareas.Services
         {
             var tareas = await _tareaRepository.Get();
 
-            return tareas.Select(t => new TareaDto
-            {
-                TareaId = t.TareaId,
-                Titulo = t.Titulo,
-                Descripcion = t.Descripcion,
-                Estado = t.Estado,
-                FechaLimite = t.FechaLimite
-            });
+            return tareas.Select(t => _mapper.Map<TareaDto>(t));
         }
 
         public async Task<TareaDto> GetById(int id)
@@ -38,14 +31,7 @@ namespace gestionTareas.Services
             
             if(tarea != null)
             {
-                var tareaDto = new TareaDto
-                {
-                    TareaId = tarea.TareaId,
-                    Titulo = tarea.Titulo,
-                    Descripcion = tarea.Descripcion,
-                    Estado = tarea.Estado,
-                    FechaLimite = tarea.FechaLimite
-                };
+                var tareaDto = _mapper.Map<TareaDto>(tarea);
                 return tareaDto;
             }
             return null;
@@ -54,6 +40,7 @@ namespace gestionTareas.Services
         public async Task<TareaDto> Add(TareaInsertDto tareaInsertDto)
         {
             var tarea = _mapper.Map<Tarea>(tareaInsertDto);
+
             await _tareaRepository.Add(tarea);
             await _tareaRepository.Save();
 
@@ -68,9 +55,7 @@ namespace gestionTareas.Services
 
             if (tarea != null)
             {
-                tarea.Descripcion = tareaUpdateDto.Descripcion;
-                tarea.Estado = tareaUpdateDto.Estado;
-                tarea.FechaLimite =tareaUpdateDto.FechaLimite;
+                tarea = _mapper.Map<TareaUpdateDto, Tarea>(tareaUpdateDto, tarea);
 
                 _tareaRepository.Update(tarea);
                 await _tareaRepository.Save();
