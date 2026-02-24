@@ -1,7 +1,11 @@
+using FluentValidation;
 using gestionTareas.AutoMappers;
+using gestionTareas.DTOs;
 using gestionTareas.Models;
 using gestionTareas.Repository;
 using gestionTareas.Services;
+using gestionTareas.Validators;
+using Microsoft.AspNetCore.WebSockets;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -29,6 +33,9 @@ namespace gestionTareas
 
             // Inyección de Mappers
             builder.Services.AddAutoMapper(cfg => { }, typeof(MappingProfile));
+
+            // Validadores
+            builder.Services.AddScoped<IValidator<TareaInsertDto>, TareaInsertValidator>();
 
             //permisos de para acceder a la API
             var MyAllowOrigins = "MyAllowOrigins";

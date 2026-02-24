@@ -1,4 +1,5 @@
-﻿using gestionTareas.DTOs;
+﻿using FluentValidation;
+using gestionTareas.DTOs;
 using gestionTareas.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,10 +9,12 @@ namespace gestionTareas.Controllers
     [Route("[controller]")]    
     public class TareaController : ControllerBase
     {
-        ITareaService _tareaService;
-        public TareaController(ITareaService tareaService)
+        private readonly ITareaService _tareaService;
+        private readonly IValidator<TareaInsertDto> _tareaInsertValidator;
+        public TareaController(ITareaService tareaService, IValidator<TareaInsertDto> tareaInsertValidator)
         {
             _tareaService = tareaService;
+            _tareaInsertValidator = tareaInsertValidator;
         }
 
         [HttpGet]
@@ -29,6 +32,10 @@ namespace gestionTareas.Controllers
         [HttpPost]
         public async Task<ActionResult<TareaDto>> Add(TareaInsertDto tareaInsertDto)
         {
+            var validationResult = await _tareaInsertValidator.ValidateAsync(tareaInsertDto);
+            if (!validationResult.IsValid)
+                return BadRequest(validationResult.Errors);
+
             await _tareaService.Add(tareaInsertDto);
             return Ok();
 
